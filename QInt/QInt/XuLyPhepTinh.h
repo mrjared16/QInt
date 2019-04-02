@@ -9,6 +9,6 @@ public:
 private:
 	string operand1, operand2;
 	int base1, base2;
-	int operator_code;
+	string operator_str;
 };
 

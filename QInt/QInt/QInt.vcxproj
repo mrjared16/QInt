@@ -144,10 +144,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="QInt.cpp" />
     <ClCompile Include="XuLyInOut.cpp" />
     <ClCompile Include="XuLyPhepTinh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="QInt.h" />
     <ClInclude Include="XuLyInOut.h" />
     <ClInclude Include="XuLyPhepTinh.h" />
   </ItemGroup>

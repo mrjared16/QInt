@@ -24,12 +24,18 @@
     <ClCompile Include="XuLyPhepTinh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="QInt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XuLyInOut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XuLyPhepTinh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QInt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
