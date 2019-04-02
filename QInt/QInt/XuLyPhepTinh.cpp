@@ -72,7 +72,7 @@ string XuLyPhepTinh::result()
 	if (operator_str == "")
 	{
 		opr1.stringToQInt(operand1, base1); // Chuyen sang QInt
-		result = opr1.QIntToString(base2);	// Chuyen sang co so can chuyen
+		result = opr1.toString(base2);	// Chuyen sang co so can chuyen
 	}
 	else
 	{
@@ -97,17 +97,21 @@ string XuLyPhepTinh::result()
 		{
 			// Tao opr1, opr2
 			opr1.stringToQInt(operand1, base1);
-			opr2.stringToQInt(operand2, base2);
+			
+			// Truong hop >>, << doc operand 2 la int
 			if (operator_str == ">>") 
 			{
-				tmp = opr1 >> opr2;
+				int k = stoi(operand2); 
+				tmp = opr1 >> k;
 			}
 			else if(operator_str == "<<")
 			{
-				tmp = opr1 << opr2;
+				int k = stoi(operand2);
+				tmp = opr1 << k;
 			}
 			else
 			{
+				opr2.stringToQInt(operand2, base1);
 				char opt = operator_str[0]; 
 				// opt domain: +, -, *, /, &, |, ^, =
 
@@ -144,7 +148,7 @@ string XuLyPhepTinh::result()
 			}
 		}
 		// Sau do chuyen thanh chuoi luu vao result
-		result = tmp.QIntToString(base1); // Chuyen sang co so cu
+		result = tmp.toString(base1); // Chuyen sang co so cu
 	}
 
 	return result;
