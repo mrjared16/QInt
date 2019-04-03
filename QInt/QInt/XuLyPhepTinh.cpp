@@ -6,7 +6,7 @@ XuLyPhepTinh::XuLyPhepTinh(string input)
 	string delimiter = " "; // phep toan, toan hang cach nhau boi " "
 
 	int start = 0;
-	int end, i;
+	int end, i = 0;
 
 	// Tien hanh doc token (toan hang, toan tu, base) vao mang
 	// Toi da co 4 token
@@ -124,13 +124,13 @@ string XuLyPhepTinh::result()
 					break;
 				case '-':
 					tmp = opr1 - opr2;
-					break;
+					break;/*
 				case '*':
 					tmp = opr1 * opr2;
 					break;
 				case '/':
 					tmp = opr1 / opr2;
-					break;
+					break;*/
 				case '&':
 					tmp = opr1 & opr2;
 					break;
