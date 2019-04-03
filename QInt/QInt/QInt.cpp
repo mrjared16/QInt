@@ -2,31 +2,95 @@
 
 QInt::QInt()
 {
-	this->sign = ZERO;
+	this->sign = 0;
 	for (int i = 0; i < 4; i++) {
 		this->arrayBits[i] = 0;
 	}
 }
 
-// pos: 1 - 128
-// bit: 0 / 1
-
-void QInt::setBit(int pos, int bit)
+void QInt::SetBit(int pos, int bit)
 {
 	if (pos % 32 == 0)
-		this->arrayBits[pos / 32 - 1] = bit | this->arrayBits[pos / 32 - 1];
+		this->arrayBits[pos / 32 - 1] = (bit << 0) | this->arrayBits[pos / 32 - 1];
 	else
 		this->arrayBits[pos / 32] = (bit << (32 - pos % 32)) | this->arrayBits[pos / 32];
 }
 
-int QInt::getBit(int pos)
+void QInt::DecToQInt(string number)
 {
-	int tmp;
-	if (pos % 32 == 0)
-		tmp = (1 & this->arrayBits[pos / 32 - 1]);
-	else tmp = (1 << (32 - pos % 32)) & this->arrayBits[pos / 32];
+	if (number.at(0) == '-') {
+		this->sign = -1;
+		number.at(0) = '0';
+		string temp = DecToBinary(number);
+		temp = twoComplement(temp);
+		this->BinaryToQInt(temp);
+		return;
+	}
+	else if (number.compare("0") == 0) {
+		this->sign = 0;
+		return;
+	}
+	this->sign = 1;
+	int i = 128;
+	int len = number.size() - 1;
+	int bit;
+	while (number != "0") {
+		bit = (number[len] - 48) % 2;
+		this->SetBit(i, bit);
+		number = Div2(number);
+		i--;
+		len = number.size() - 1;
+	}
+}
 
-	return (tmp != 0) ? 1 : 0;
+void QInt::BinaryToQInt(string binary)
+{
+	int i = 128;
+	int len = binary.size() - 1;
+	while (len >= 0) {
+		this->SetBit(i, (binary[len] - 48) % 2);
+		i--;
+		len--;
+	}
+}
+
+void QInt::HexToQInt(string hex) {
+	string binary = HexToBinary(hex);
+	this->BinaryToQInt(binary);
+}
+
+string QInt::QIntToBinary()
+{
+	string binary;
+	int pos = 0;
+	string temp;
+	for (int i = 0; i < 4; i++) {
+		if (this->arrayBits[i] != 0) {
+			temp = DecToBinary(to_string(this->arrayBits[i]));
+			temp.replace(0, 96, ""); //Delete '0', only get 32 bit last
+			binary.insert(pos, temp);
+			pos = binary.size();
+		}
+	}
+	return binary;
+}
+
+string QInt::QIntToDec()
+{
+	if (this->isZero()) {
+		return "0";
+	}
+	string binary = this->QIntToBinary();
+	string Decimal = BinaryToDec(binary, true);
+	if (this->sign == -1) {
+		Decimal.insert(0, "-");
+	}
+	return Decimal;
+}
+
+string QInt::QIntToHex() {
+	string binary = this->QIntToBinary();
+	return BinaryToHex(binary);
 }
 
 bool QInt::isZero()
@@ -43,150 +107,38 @@ QInt QInt::operator+(QInt n)
 {
 	QInt result;
 	int sum = 0;
-	int i = 128;
-	while (i > 0) {
+	int i = 127;
+	while (i >= 0) {
 		// Comput sum of last digits and carry
-		//if (pos >= 0 && (this->arrayBits[pos / 32] & (1 << 31 - pos % 32)) != 0)
-		//return 1;
-		sum += this->getBit(i);
-		sum += n.getBit(i);
+		sum += ((i >= 0) ? (((this->arrayBits[i / 32] & (1 << 31 - i % 32)) != 0) ? 1 : 0) : 0);
+		sum += ((i >= 0) ? (((n.arrayBits[i / 32] & (1 << 31 - i % 32)) != 0) ? 1 : 0) : 0);
 		// If current digit sum is 1 or 3, add 1 to result 
-		result.setBit(i, sum % 2);
+		result.SetBit(i + 1, sum % 2);
 		// Compute carry 
 		sum /= 2;
 		// Move to next digits 
 		i--;
 	}
-
 	//Check result is nagative or postive
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	/*unsigned int nagative = pow(2, 31);
+	unsigned int nagative = pow(2, 31);
 	if (result.arrayBits[0] >= nagative) {
 		result.sign = -1;
 	}
 	else if (!result.isZero()) {
 		result.sign = 1;
-	}*/
+	}
 	return result;
 }
 
 QInt QInt::operator-(QInt n)
 {
 	//Convert from n to -n
-	/*string binary = n.toBin();
+	string binary = n.QIntToBinary();
 	binary = twoComplement(binary);
 	string numberNagative = BinaryToDec(binary, false);
-	string numberNagative = BinaryToDec(twoComplement(n.toBin()), false);*/
 	QInt n1;
-	//n1.DecToQInt(numberNagative); // -n
-	n1.stringToQInt(twoComplement(n.toBin()), 2); // -n
+	n1.DecToQInt(numberNagative); // -n
 	return *this + n1;
-}
-
-QInt QInt::operator&(QInt n)
-{
-	QInt result;
-	int tmp = 0;
-	for (int i = 128; i > 0; i--)
-	{
-		tmp = this->getBit(i) & n.getBit(i);
-		result.setBit(i, tmp);
-	}
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-QInt QInt::operator|(QInt n)
-{
-	QInt result;
-	int tmp = 0;
-	for (int i = 128; i > 0; i--)
-	{
-		tmp = this->getBit(i) | n.getBit(i);
-		result.setBit(i, tmp);
-	}
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-QInt QInt::operator^(QInt n)
-{
-	QInt result;
-	int tmp = 0;
-	for (int i = 128; i > 0; i--)
-	{
-		tmp = this->getBit(i) ^ n.getBit(i);
-		result.setBit(i, tmp);
-	}
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-QInt QInt::operator>>(unsigned int k)
-{
-	QInt result;
-	result.setBit(1, this->getBit(1));
-	for (int i = 1; i + k <= 128; i++)
-	{
-		result.setBit(i + k, this->getBit(i));	// 1 + k -> 128
-	}
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-QInt QInt::operator<<(unsigned int k)
-{
-	// Luu y dich trai, result luu bit dau roi dich cac bit con lai
-	QInt result;
-	result.setBit(1, this->getBit(1));
-	//Bat dau tu 2, bo qua bit 1
-	for (int i = 2; i + k <= 128; i++)	
-	{
-		result.setBit(i, this->getBit(i + k));	// 2 -> 128
-	}
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-QInt QInt::operator~()
-{
-	QInt result;
-	for (int i = 128; i > 0; i--)
-	{
-		result.setBit(i, (this->getBit(i) == 0) ? 1 : 0);
-	}
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-// Xoay trai 1 bit
-QInt QInt::rol()
-{
-	QInt result;
-	// bit cuoi la bit dau cua bit ban dau
-	result.setBit(128, this->getBit(1));
-	for (int i = 128; i > 1; i--)
-	{
-		// bit moi vi tri i la bit cu vi tri sau no 1 don vi
-		result.setBit(i - 1, this->getBit(i)); 
-	}
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-// Xoay phai 1 bit
-QInt QInt::ror()
-{
-	QInt result;
-	// bit dau la bit cuoi cua bit cuoi ban dau
-	result.setBit(1, this->getBit(128));
-	for (int i = 128; i > 1; i--)
-	{
-		// bit moi vi tri i la bit cu vi tri truoc no 1 don vi
-		result.setBit(i, this->getBit(i - 1));
-	}
-	result.sign = (result.getBit(1) == 1) ? POSITIVE : NEGATIVE;
-	return result;
 }
 
 void QInt::operator=(QInt n)
@@ -196,131 +148,6 @@ void QInt::operator=(QInt n)
 		this->arrayBits[i] = n.arrayBits[i];
 	}
 }
-
-void QInt::stringToQInt(string n, int base)
-{
-	switch (base)
-	{
-	case 2:
-		binToQInt(n);
-		break;
-	case 10:
-		decToQInt(n);
-		break;
-	case 16:
-		hexToQInt(n);
-		break;
-	}
-}
-
-string QInt::toString(int base)
-{
-	string result = "";
-	switch (base)
-	{
-	case 2:
-		result = toBin();
-		break;
-	case 10:
-		result = toDec();
-		break;
-	case 16:
-		result = toHex();
-		break;
-	}
-}
-
-
-void QInt::decToQInt(string number)
-{
-	if (number.at(0) == '-') {
-		this->sign = NEGATIVE;
-		number.at(0) = '0';
-		string temp = DecToBinary(number);
-		temp = twoComplement(temp);
-		this->binToQInt(temp);
-		return;
-	}
-	else if (number.compare("0") == 0) {
-		this->sign = ZERO;
-		return;
-	}
-	this->sign = POSITIVE;
-	int i = 128;
-	int len = number.size() - 1;
-	int bit;
-	while (number != "0") {
-		bit = (number[len] - 48) % 2;
-		this->setBit(i, bit);
-		number = Div2(number);
-		i--;
-		len = number.size() - 1;
-	}
-}
-
-void QInt::binToQInt(string binary)
-{
-	int i = 128;
-	int len = binary.size() - 1;
-	while (len >= 0) {
-		this->setBit(i, (binary[len] - 48) % 2);
-		i--;
-		len--;
-	}
-}
-
-void QInt::hexToQInt(string hex) {
-	string binary = HexToBinary(hex);
-	this->binToQInt(binary);
-}
-
-string QInt::toBin()
-{
-	string binary;
-	int pos = 0;
-	string temp;
-	for (int i = 0; i < 4; i++) {
-		if (this->arrayBits[i] != 0) {
-			temp = DecToBinary(to_string(this->arrayBits[i]));
-			temp.replace(0, 96, ""); //Delete '0', only get 32 bit last
-			binary.insert(pos, temp);
-			pos = binary.size();
-		}
-	}
-	return binary;
-}
-
-string QInt::toDec()
-{
-	if (this->isZero()) {
-		return "0";
-	}
-	string binary = this->toBin();
-	string Decimal = BinaryToDec(binary, true);
-	if (this->sign == NEGATIVE) {
-		Decimal.insert(0, "-");
-	}
-	return Decimal;
-}
-
-string QInt::toHex() {
-	string binary = this->toBin();
-	return BinaryToHex(binary);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 string Div2(string number)
 {
