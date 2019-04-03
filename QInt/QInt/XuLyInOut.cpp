@@ -9,7 +9,7 @@ void XuLyInOut::run(string input_name, string output_name)
 	string buffer;
 	fstream f_inp(input_name);
 	// Mo file input va doc
-
+	//das
 	if (!f_inp.good())
 	{
 		// Mo khong duoc: Sai duong dan hoac file ko ton tai
