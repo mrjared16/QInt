@@ -7,7 +7,8 @@
 void XuLyInOut::run(string input_name, string output_name)
 {
 	string buffer;
-	fstream f_inp(input_name);
+	ifstream f_inp;
+	f_inp.open(input_name);
 	// Mo file input va doc
 	//das
 	if (!f_inp.good())
@@ -19,7 +20,8 @@ void XuLyInOut::run(string input_name, string output_name)
 	// Neu mo thanh cong
 
 	// Tao file output
-	fstream f_out(output_name);
+	ofstream f_out;
+	f_out.open(output_name);
 
 	if (!f_out.good())
 	{

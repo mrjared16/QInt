@@ -6,19 +6,23 @@ XuLyPhepTinh::XuLyPhepTinh(string input)
 	string delimiter = " "; // phep toan, toan hang cach nhau boi " "
 
 	int start = 0;
-	int end, i;
+	int end, i = 0;
 
 	// Tien hanh doc token (toan hang, toan tu, base) vao mang
 	// Toi da co 4 token
 	string token[4];
-	while ((end = input.find(delimiter, start) != string::npos))
+	end = input.find(delimiter, start);
+	while (end != string::npos)
 	{
+		string tmp = input.substr(start, end - start);
 		token[i++] = input.substr(start, end - start);
 		start = end + 1;
-		if (i >= 4)
+		end = input.find(delimiter, start);
+		if (i >= 3)
 			break;
 	}
 
+	token[i++] = input.substr(start);
 	// Tien hanh xu ly thong tin luu vao cac bien
 	// Co 3 truong hop: 
 

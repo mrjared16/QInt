@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <math.h>
@@ -55,8 +54,6 @@ private:
 // Ham tham khao tren mang
 string Div2(string number);
 string Sum(string str1, string str2);
-bool isSmaller(string str1, string str2);
-string findDiff(string str1, string str2);
 string multiply(string num1, string num2);
 //=========================================
 
@@ -66,7 +63,7 @@ string twoComplement(string binary);
 string codeBinaryOfHex(char hex);
 string codeHexOfBinary(string binary);
 string DecToBinary(string number);
-string BinaryToDec(string binary, bool twoCompl); // if twoCompl = true, convert two complement format
+string BinaryToDec(string binary); // if twoCompl = true, convert two complement format
 string BinaryToHex(string binary);
 string HexToBinary(string hex);
 
