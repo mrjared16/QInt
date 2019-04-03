@@ -11,4 +11,3 @@ private:
 	int base1, base2;
 	string operator_str;
 };
-

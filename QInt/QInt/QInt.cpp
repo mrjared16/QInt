@@ -282,7 +282,7 @@ string QInt::toBin()
 	for (int i = 0; i < 4; i++) {
 		if (this->arrayBits[i] != 0) {
 			temp = DecToBinary(to_string(this->arrayBits[i]));
-			temp.replace(0, 96, ""); //Delete '0', only get 32 bit last
+			temp.replace(0, 128 - 32, ""); //Delete '0', only get 32 bit last
 			binary.insert(pos, temp);
 			pos = binary.size();
 		}
@@ -598,6 +598,15 @@ string codeHexOfBinary(string binary)
 	else return "0";
 }
 
+string HexToBinary(string hex)
+{
+	string binary;
+	for (int i = hex.size() - 1; i >= 0; i--) {
+		binary.insert(0, codeBinaryOfHex(hex.at(i)));
+	}
+	return binary;
+}
+
 string DecToBinary(string number)
 {
 	string binary = "";
@@ -656,14 +665,7 @@ string BinaryToHex(string binary)
 	return result;
 }
 
-string HexToBinary(string hex)
-{
-	string binary;
-	for (int i = hex.size() - 1; i >= 0; i--) {
-		binary.insert(0, codeBinaryOfHex(hex.at(i)));
-	}
-	return binary;
-}
+
 
 
 
