@@ -23,7 +23,6 @@ void QInt::setBit(int pos, int bit)
 
 }
 
-
 int QInt::getBit(int pos)
 {
 	pos -= 1;
@@ -174,6 +173,7 @@ QInt QInt::operator<<(unsigned int k)
 	return result;
 }
 
+
 QInt QInt::operator&(QInt n)
 {
 	QInt result;
@@ -272,7 +272,6 @@ QInt QInt::shiftLeft(unsigned int k)
 
 	return result;
 }
-
 // Lay so doi cua -x cua x
 QInt QInt::changeSign()
 {
@@ -322,7 +321,7 @@ string QInt::toString(int base)
 
 void QInt::decToQInt(string number)
 {
-	if (number.at(0) == '-') {
+	/*if (number.at(0) == '-') {
 		number.at(0) = '0';
 		string temp = DecToBinary(number);
 		temp = twoComplement(temp);
@@ -341,21 +340,32 @@ void QInt::decToQInt(string number)
 		number = Div2(number);
 		i++;
 		len = number.size() - 1;
-	}
+	}*/
+	if (number == "0")
+		return;
+	string binary = DecToBinary(number);
+	this->binToQInt(binary);
 }
 
+// Doc chuoi binary vao QInt
+// binary: Khong can chuan hoa du 128 ki tu
 void QInt::binToQInt(string binary)
 {
 	int i = 1;
 	int len = binary.size() - 1;
+	// QInt danh dau bit tu trai sang phai
+	// QInt.bit(1) = lastCharOf(binary)
+	// i tang cho toi khi ve toi dau chuoi
 	while (len >= 0) {
-		this->setBit(i, (binary[len] - 48) % 2);
+		this->setBit(i, (binary[len] - '0')); // % 2);
 		i++;
 		len--;
 	}
 }
 
+// Doc chuoi hex vao QInt
 void QInt::hexToQInt(string hex) {
+	// Chuyen sang binary 
 	string binary = HexToBinary(hex);
 	this->binToQInt(binary);
 }
@@ -363,30 +373,35 @@ void QInt::hexToQInt(string hex) {
 
 string QInt::toBin()
 {
-	string binary;
-	binary = standardizedBinary(binary);
-	string temp;
-	for (int i = 0; i < 4; i++) {
-		if (this->arrayBits[i] != 0) {
-			temp = DecToBinary(to_string(this->arrayBits[i]));
-			temp.replace(0, 128 - 32, ""); //Delete '0', only get 32 bit last
-			binary.replace(i * 32, 32, temp);
-		}
+	string binary = "";
+	//binary = standardizedBinary(binary);
+	//string temp;
+	//for (int i = 0; i < 4; i++) {
+	//	if (this->arrayBits[i] != 0) {
+	//		temp = DecToBinary(to_string(this->arrayBits[i]));
+	//		temp.replace(0, 128 - 32, ""); //Delete '0', only get 32 bit last
+	//		binary.replace(i * 32, 32, temp);
+	//	}
+	//}
+	for (int i = 128; i >= 1; i--)
+	{
+		binary += (this->getBit(i) + '0');
 	}
 	return binary;
 }
 
 string QInt::toDec()
 {
-	string binary = this->toBin();
+	/*string binary = this->toBin();
 	if (this->isNegative()) {
 		binary = twoComplement(binary);
 	}
 	string Decimal = BinaryToDec(binary);
 	if (this->isNegative()) {
 		Decimal.insert(0, "-");
-	}
-	return Decimal;
+	}*/
+	string binary = this->toBin();
+	return BinaryToDec(binary);
 }
 
 string QInt::toHex() {
@@ -574,6 +589,98 @@ string twoComplement(string binary)
 	return binary;
 }
 
+
+string DecToBinary(string number)
+{
+	string binary = "";
+	binary = standardizedBinary(binary);
+	int i = 127;
+	int bit;
+	int len = number.size() - 1;
+	while (number != "0") {
+		bit = (number[len] - 48) % 2;
+		if (binary.at(i) == '1' || bit == 1) {
+			binary.at(i) = '1';
+		}
+		number = Div2(number);
+		len = number.size() - 1;
+		i--;
+	}
+	return binary;
+}
+
+string BinaryToDec(string binary)
+{
+	binary = standardizedBinary(binary);
+	string Decimal = "0";
+	for (int i = 127; i >= 0; i--) {
+		if (binary.at(i) == '1') {
+			Decimal = Sum(Decimal, twoHat(127 - i));
+		}
+	}
+	while (Decimal.at(0) == '0' && Decimal.compare("0") != 0) {
+		Decimal.replace(0, 1, "");
+	}
+	return Decimal;
+}
+
+
+string HexToBinary(string hex)
+{
+	string binary;
+	int len = hex.length();
+	for (int i = len - 1; i >= 0; i--) {
+		binary = codeBinaryOfHex(hex[i]) + binary;
+		//binary.insert(0, codeBinaryOfHex(hex.at(i)));
+	}
+	return binary;
+}
+
+string BinaryToHex(string binary)
+{
+	//binary = standardizedBinary(binary);
+	//int i = 127;
+	//string code;
+	//string result;
+	//while (i >= 0) {
+	//	for (int j = 0; j < 4; j++) { //Get 4 bit last in binary string
+	//		code += binary.at(i);
+	//		i--;
+	//	}
+	//	reverse(code.begin(), code.end());
+	//	result.insert(0, codeHexOfBinary(code));
+	//	code = ""; //initialization code string
+	//}
+	//while (result.at(0) == '0') { //Delete 0 in front
+	//	result.replace(0, 1, "");
+	//}
+	string result, get_4_lastbits;
+	string tmp = binary;
+	while (tmp != "")
+	{
+		int len = tmp.length();
+		// Lay tung chuoi 4 bit cuoi
+
+		// Neu du 4 bit
+		if (len >= 4)
+		{
+			get_4_lastbits = tmp.substr(len - 4);	// Lay 4 bit cuoi
+			tmp = tmp.substr(0, len - 4);			// Cat di 4 ki tu cuoi
+		}
+		// Neu khong du 4 bit
+		else
+		{
+			// Them 0 vao truoc chuoi tmp cho du 4 bit
+			string addition_zero(4 - len, '0');
+			get_4_lastbits = addition_zero + tmp;
+			tmp = "";
+		}
+		result = codeHexOfBinary(get_4_lastbits) + result;		// Them vao truoc result
+	}
+	return result;
+}
+
+
 string codeBinaryOfHex(char hex)
 {
 	switch (hex)
@@ -617,69 +724,10 @@ string codeHexOfBinary(string binary)
 	else return "0";
 }
 
-string HexToBinary(string hex)
-{
-	string binary;
-	for (int i = hex.size() - 1; i >= 0; i--) {
-		binary.insert(0, codeBinaryOfHex(hex.at(i)));
-	}
-	return binary;
-}
 
-string DecToBinary(string number)
-{
-	string binary = "";
-	binary = standardizedBinary(binary);
-	int i = 127;
-	int bit;
-	int len = number.size() - 1;
-	while (number != "0") {
-		bit = (number[len] - 48) % 2;
-		if (binary.at(i) == '1' || bit == 1) {
-			binary.at(i) = '1';
-		}
-		number = Div2(number);
-		len = number.size() - 1;
-		i--;
-	}
-	return binary;
-}
 
-string BinaryToDec(string binary)
-{
-	binary = standardizedBinary(binary);
-	string Decimal = "0";
-	for (int i = 127; i >= 0; i--) {
-		if (binary.at(i) == '1') {
-			Decimal = Sum(Decimal, twoHat(127 - i));
-		}
-	}
-	while (Decimal.at(0) == '0' && Decimal.compare("0") != 0) {
-		Decimal.replace(0, 1, "");
-	}
-	return Decimal;
-}
 
-string BinaryToHex(string binary)
-{
-	binary = standardizedBinary(binary);
-	int i = 127;
-	string code;
-	string result;
-	while (i >= 0) {
-		for (int j = 0; j < 4; j++) { //Get 4 bit last in binary string
-			code += binary.at(i);
-			i--;
-		}
-		reverse(code.begin(), code.end());
-		result.insert(0, codeHexOfBinary(code));
-		code = ""; //initialization code string
-	}
-	while (result.at(0) == '0') { //Delete 0 in front
-		result.replace(0, 1, "");
-	}
-	return result;
-}
+
 
 
 
