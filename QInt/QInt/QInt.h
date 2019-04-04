@@ -33,7 +33,9 @@ private:
 
 	int getBit(int pos);
 	void setBit(int pos, int bit);
-
+	QInt shiftLeft(unsigned int k);
+	QInt changeSign();
+	
 	void decToQInt(string number);
 	void binToQInt(string binary);
 	void hexToQInt(string hex);
@@ -42,7 +44,6 @@ private:
 	string toDec();
 	string toHex();
 
-	bool isZero();
 	bool isNegative();
 	bool isPositive();
 
