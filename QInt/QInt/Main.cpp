@@ -7,10 +7,10 @@ int main(int argv, char **arg)
 	int output_index = 2;
 
 	XuLyInOut::run(arg[input_index], arg[output_index]);*/
-	string a = "3";
+	string a = "788323282258381939236275890776";
 	QInt b;
 	b.stringToQInt(a, 10);
-	string c = "7";
+	string c = "-27388934683056007097503944712";
 	QInt d;
 	d.stringToQInt(c, 10);
 	QInt e;
