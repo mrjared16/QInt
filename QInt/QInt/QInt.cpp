@@ -112,10 +112,10 @@ QInt QInt::operator/(QInt n)
 	QInt M = n;
 	//Neu Q hoac M la so am thi doi thanh so duong va thuc hien phep chia
 	if (this->isNegative()) {
-		Q.changeSign();
+		Q = Q.changeSign();
 	}
 	if (n.isNegative()) {
-		M.changeSign();
+		M = M.changeSign();
 	}
 	int k = 128;
 	int bit;
@@ -137,7 +137,7 @@ QInt QInt::operator/(QInt n)
 	}
 	//Neu Q hoac M khac dau thi doi dau thuong thanh so am
 	if (this->getSignBit() != n.getSignBit()) {
-		Q.changeSign();
+		Q = Q.changeSign();
 	}
 	return Q;
 }
