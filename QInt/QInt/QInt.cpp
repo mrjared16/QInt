@@ -2,7 +2,6 @@
 
 QInt::QInt()
 {
-	this->sign = ZERO;
 	for (int i = 0; i < 4; i++) {
 		this->arrayBits[i] = 0;
 	}
@@ -17,7 +16,7 @@ void QInt::setBit(int pos, int bit)
 	// Tat bit 1
 	if (bit == 0 && getBit(pos + 1) == 1)
 	{
-		this->arrayBits[3 - pos / 32] |= (~bit << (pos % 32));
+		this->arrayBits[3 - pos / 32] &= (~bit << (pos % 32));
 	}
 	else 
 		this->arrayBits[3 - pos / 32] |= (bit << (pos % 32));
@@ -32,6 +31,13 @@ int QInt::getBit(int pos)
 	return (tmp == 0) ? 0 : 1;
 }
 
+
+int QInt::getSignBit()
+{
+	return this->getBit(128);
+}
+
+
 bool QInt::isZero()
 {
 	for (int i = 0; i < 4; i++) {
@@ -42,31 +48,44 @@ bool QInt::isZero()
 	return true;
 }
 
+bool QInt::isNegative()
+{
+	return (this->getSignBit() == 1);
+}
+
+bool QInt::isPositive()
+{
+	return (this->getSignBit() == 0);
+}
+
+
 QInt QInt::operator+(QInt n)
 {
 	QInt result;
 	int sum = 0;
 	int i = 1;
+	int carry = 0;
+
+	// Cong bit lan luot tu bit 1 den bit 128
 	for (int i = 1; i <= 128; i++) {
-		// Comput sum of last digits and carry
-		sum += this->getBit(i);
-		sum += n.getBit(i);
-		// If current digit sum is 1 or 3, add 1 to result 
+		// Cong hai bit vao sum
+		// Cong them carry neu co
+		sum = this->getBit(i) + n.getBit(i) + carry;
 		result.setBit(i, sum % 2);
-		// Compute carry 
-		sum /= 2;
+		// Tinh carry  
+		carry = sum / 2;
 	}
-	//Check result is nagative or postive
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
+	
 	return result;
 }
 
 QInt QInt::operator-(QInt n)
 {
-	//Convert from n to -n
+	// a - b = a + (-b)
 	QInt n1;
+	// chuyen sang dang bu hai => chuyen sang QInt
 	n1.stringToQInt(twoComplement(n.toBin()), 2); // -n
-	return *this + n1;
+	return (*this + n1);
 }
 
 QInt QInt::operator*(QInt n)
@@ -78,7 +97,7 @@ QInt QInt::operator*(QInt n)
 			for (int j = 128; j - (i - 1) >= 1; j--)
 			{
 				temp.setBit(j, this->getBit(j - (i - 1)));
-			}
+			 }
 			A = A + temp;
 		}
 	}
@@ -91,12 +110,12 @@ QInt QInt::operator/(QInt n)
 	QInt Q;
 	QInt zero;
 	QInt M;
-	if (this->sign == NEGATIVE) {
+	if (this->isNegative()) {
 		Q = zero - *this;
 	}
 	else
 		Q = *this;
-	if (n.sign == NEGATIVE) {
+	if (n.isNegative()) {
 		M = zero - n;
 	}
 	else
@@ -106,7 +125,7 @@ QInt QInt::operator/(QInt n)
 	while (k > 0) {
 		string d = Q.toBin();
 		bit = Q.getBit(127);
-		bit1 = Q.getBit(128);
+		bit1 = Q.getSignBit();
 		bit2 = A.getBit(127);
 		A = A << 1;
 		Q = Q << 1;
@@ -127,7 +146,7 @@ QInt QInt::operator/(QInt n)
 			A.arrayBits[3] &= ~1;
 		d = Q.toBin();
 		A = A - M;
-		if (A.sign == NEGATIVE) {
+		if (A.isNegative()) {
 			A = A + M;
 			Q.arrayBits[3] &= ~1;
 		}
@@ -135,11 +154,51 @@ QInt QInt::operator/(QInt n)
 			Q.arrayBits[3] |= 1;
 		k--;
 	}
-	Q.sign = (Q.getBit(128) == 0) ? POSITIVE : NEGATIVE;
-	if (this->sign != n.sign) {
+	
+	if (this->getSignBit() != n.getSignBit()) {
 		Q = zero - Q;
 	}
 	return Q;
+}
+
+
+QInt QInt::operator>>(unsigned int k)
+{
+	QInt result;
+	// Luu bit dau
+	result.setBit(128, this->getSignBit());
+	// Truong hop QInt < 0, 1000 >> 2 = 1110
+	int negative_sign_bit = 1;
+	if (result.getSignBit() == negative_sign_bit)
+	{
+		// Gan cac bit 127 -> 128 - k + 1 = 1
+		for (int i = 127; i >= 128 - k + 1; i--)
+		{
+			result.setBit(i, negative_sign_bit);
+		}
+	}
+	// Dich cac bit con lai: 128 - k -> 1
+	for (int i = 128; i - k >= 1; i--)
+	{
+		result.setBit(i - k, this->getBit(i));
+	}
+	
+	return result;
+}
+
+QInt QInt::operator<<(unsigned int k)
+{
+	QInt result;
+	// Luu bit dau
+	result.setBit(128, this->getSignBit());
+	// Dich cac bit con lai
+	// Bat dau tu 127, bo qua bit dau
+	for (int i = 127; i - k >= 1; i--)	
+	{
+		result.setBit(i, this->getBit(i - k));
+	}
+	
+	return result;
 }
 
 QInt QInt::operator&(QInt n)
@@ -151,7 +210,7 @@ QInt QInt::operator&(QInt n)
 		tmp = this->getBit(i) & n.getBit(i);
 		result.setBit(i, tmp);
 	}
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
+	
 	return result;
 }
 
@@ -164,7 +223,7 @@ QInt QInt::operator|(QInt n)
 		tmp = this->getBit(i) | n.getBit(i);
 		result.setBit(i, tmp);
 	}
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
+	
 	return result;
 }
 
@@ -177,33 +236,7 @@ QInt QInt::operator^(QInt n)
 		tmp = this->getBit(i) ^ n.getBit(i);
 		result.setBit(i, tmp);
 	}
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-QInt QInt::operator>>(unsigned int k)
-{
-	QInt result;
-	result.setBit(128, this->getBit(128));
-	for (int i = 1; i + k <= 128; i++)
-	{
-		result.setBit(i, this->getBit(i + k));	// 1 + k -> 128
-	}
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
-	return result;
-}
-
-QInt QInt::operator<<(unsigned int k)
-{
-	// Luu y dich trai, result luu bit dau roi dich cac bit con lai
-	QInt result;
-	result.setBit(128, this->getBit(128));
-	//Bat dau tu 2, bo qua bit 1
-	for (int i = 127; i - k >= 1; i--)	
-	{
-		result.setBit(i, this->getBit(i - k));	// 2 -> 128
-	}
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
+	
 	return result;
 }
 
@@ -214,46 +247,45 @@ QInt QInt::operator~()
 	{
 		result.setBit(i, (this->getBit(i) == 0) ? 1 : 0);
 	}
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
+	
 	return result;
 }
-
 // Xoay trai 1 bit
 QInt QInt::rol()
 {
 	QInt result;
 	// bit cuoi la bit dau cua bit ban dau
-	result.setBit(1, this->getBit(128));
+	result.setBit(1, this->getSignBit());
 	for (int i = 128; i - 1 >= 1; i--)
 	{
 		result.setBit(i, this->getBit(i - 1));	// 2 -> 128
 	}
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
+	
 	return result;
 }
-
 // Xoay phai 1 bit
 QInt QInt::ror()
 {
 	QInt result;
 	// bit dau la bit cuoi cua bit cuoi ban dau
 	result.setBit(128, this->getBit(1));
-	for (int i = 1; i + 1 <= 128; i++)
+	// Dich cac bit con lai
+	for (int i = 128; i - 1 >= 1; i--)
 	{
-		// bit moi vi tri i la bit cu vi tri truoc no 1 don vi
-		result.setBit(i, this->getBit(i + 1));
+		result.setBit(i - 1, this->getBit(i));
 	}
-	result.sign = (result.getBit(128) == 0) ? POSITIVE : NEGATIVE;
+	
 	return result;
 }
 
+
 void QInt::operator=(QInt n)
 {
-	this->sign = n.sign;
 	for (int i = 0; i < 4; i++) {
 		this->arrayBits[i] = n.arrayBits[i];
 	}
 }
+
 
 void QInt::stringToQInt(string n, int base)
 {
@@ -297,7 +329,6 @@ string QInt::toString(int base)
 void QInt::decToQInt(string number)
 {
 	if (number.at(0) == '-') {
-		this->sign = NEGATIVE;
 		number.at(0) = '0';
 		string temp = DecToBinary(number);
 		temp = twoComplement(temp);
@@ -305,10 +336,8 @@ void QInt::decToQInt(string number)
 		return;
 	}
 	else if (number.compare("0") == 0) {
-		this->sign = ZERO;
 		return;
 	}
-	this->sign = POSITIVE;
 	int i = 1;
 	int len = number.size() - 1;
 	int bit;
@@ -337,6 +366,7 @@ void QInt::hexToQInt(string hex) {
 	this->binToQInt(binary);
 }
 
+
 string QInt::toBin()
 {
 	string binary;
@@ -358,11 +388,11 @@ string QInt::toDec()
 		return "0";
 	}
 	string binary = this->toBin();
-	if (this->sign == NEGATIVE) {
+	if (this->isNegative()) {
 		binary = twoComplement(binary);
 	}
 	string Decimal = BinaryToDec(binary);
-	if (this->sign == NEGATIVE) {
+	if (this->isNegative()) {
 		Decimal.insert(0, "-");
 	}
 	return Decimal;
