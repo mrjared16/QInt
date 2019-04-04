@@ -13,7 +13,7 @@ QInt::QInt()
 void QInt::setBit(int pos, int bit)
 {
 	pos -= 1;
-	// Tat bit 1
+	// Tat bit
 	if (bit == 0)
 	{
 		this->arrayBits[3 - pos / 32] &= ~(1 << (pos % 32)); //Sua cho nay lai nha! bit => 1, vay moi tat bit duoc
@@ -23,20 +23,6 @@ void QInt::setBit(int pos, int bit)
 
 }
 
-QInt QInt::shiftLeft(unsigned int k)
-{
-	QInt temp = *this;
-	int bit = this->getBit(128 - k); //Luu lai bit 128 sau khi dich trai = vi tri (128 - k) truoc khi dich trai
-	temp = temp << k;
-	temp.setBit(128, bit); //cai dat bit cho bit 128 sau khi dich trai da duoc luu o tren
-	return temp;
-}
-
-QInt QInt::changeSign()
-{
-	QInt zero;
-	return zero - *this; // a = 0 - a = -a
-}
 
 int QInt::getBit(int pos)
 {
@@ -70,7 +56,7 @@ QInt QInt::operator+(QInt n)
 	int i = 1;
 	int carry = 0;
 
-	// Cong bit lan luot tu bit 1 den bit 128
+	// Cong bit lan luot tu bit (1) -> (128)
 	for (int i = 1; i <= 128; i++) {
 		// Cong hai bit vao sum
 		// Cong them carry neu co
@@ -96,10 +82,12 @@ QInt QInt::operator*(QInt n)
 {
 	QInt A;
 	for (int i = 1; i <= 128; i++) {
+		// Nhan tung bit cua n voi (*this) roi cong cac ket qua
+		// Chi co cac bit 1 moi anh huong toi tich
 		if (n.getBit(i) == 1) {
-			QInt temp;
-			temp = this->shiftLeft(i - 1);
-			A = A + temp;
+			// (*this) * 1 = (*this)
+			// Qua 1 bit thi dich trai 1 lan => dich trai (i - 1) lan
+			A = A + this->shiftLeft(i - 1);
 		}
 	}
 	return A;
@@ -120,11 +108,14 @@ QInt QInt::operator/(QInt n)
 	int k = 128;
 	int bit;
 	while (k > 0) {
+		bit = Q.getSignBit();	//Luu lai bit most left cua Q truoc khi dich trai
+
 		//Dich trai [A,Q]
-		bit = Q.getBit(128); //Luu lai bit 128 cua Q truoc khi dich trai
 		A = A.shiftLeft(1); 
 		Q = Q.shiftLeft(1);
-		A.setBit(1, bit); //Cai dat bit cho bit 1 cua A = bit 128 cua Q da duoc luu o tren
+
+		A.setBit(1, bit);		//Cai dat bit cho bit 1 cua A = most left cua Q
+
 		A = A - M;
 		if (A.isNegative()) {
 			A = A + M;
@@ -150,15 +141,16 @@ QInt QInt::operator>>(unsigned int k)
 	result.setBit(128, this->getSignBit());
 	// Truong hop QInt < 0, 1000 >> 2 = 1110
 	int negative_sign_bit = 1;
-	if (result.getSignBit() == negative_sign_bit)
+	if (this->isNegative())
 	{
-		// Gan cac bit 127 -> 128 - k + 1 = 1
+		// Gan cac bit (127) -> (128 - k + 1) = 1
 		for (int i = 127; i >= 128 - k + 1; i--)
 		{
 			result.setBit(i, negative_sign_bit);
 		}
 	}
-	// Dich cac bit con lai: 128 - k -> 1
+
+	// Dich cac bit con lai: (128 - k) -> (1)
 	for (int i = 128; i - k >= 1; i--)
 	{
 		result.setBit(i - k, this->getBit(i));
@@ -239,7 +231,7 @@ QInt QInt::rol()
 	result.setBit(1, this->getSignBit());
 	for (int i = 128; i - 1 >= 1; i--)
 	{
-		result.setBit(i, this->getBit(i - 1));	// 2 -> 128
+		result.setBit(i, this->getBit(i - 1));	// i: (128) -> (2)
 	}
 	
 	return result;
@@ -248,12 +240,12 @@ QInt QInt::rol()
 QInt QInt::ror()
 {
 	QInt result;
-	// bit dau la bit cuoi cua bit cuoi ban dau
+	// bit dau la bit cuoi cua bit ban dau
 	result.setBit(128, this->getBit(1));
 	// Dich cac bit con lai
 	for (int i = 128; i - 1 >= 1; i--)
 	{
-		result.setBit(i - 1, this->getBit(i));
+		result.setBit(i - 1, this->getBit(i)); // i: (128) -> (2)
 	}
 	
 	return result;
@@ -265,6 +257,27 @@ void QInt::operator=(QInt n)
 	for (int i = 0; i < 4; i++) {
 		this->arrayBits[i] = n.arrayBits[i];
 	}
+}
+
+// Dich trai kieu luan li
+// Su dung trong phep nhan, chia
+QInt QInt::shiftLeft(unsigned int k)
+{
+	QInt result;
+	// Dich cac bit qua trai k don vi
+	for (int i = 128; i - k >= 1; i--)
+	{
+		result.setBit(i, this->getBit(i - k));
+	}
+
+	return result;
+}
+
+// Lay so doi cua -x cua x
+QInt QInt::changeSign()
+{
+	QInt zero;
+	return zero - *this; // a = 0 - a = -a
 }
 
 
