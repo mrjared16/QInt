@@ -84,7 +84,7 @@ QInt QInt::operator-(QInt n)
 	// a - b = a + (-b)
 	QInt n1;
 	// chuyen sang dang bu hai => chuyen sang QInt
-	n1.stringToQInt(twoComplement(n.toBin()), 2); // -n
+	n1.stringToQInt(twoComplement(n.toBin()), 2); // n1 = -n
 	return (*this + n1);
 }
 
