@@ -14,13 +14,21 @@ QInt::QInt()
 void QInt::setBit(int pos, int bit)
 {
 	pos -= 1;
-	this->arrayBits[3 - pos / 32] |= (bit << pos % 32);
+	// Tat bit 1
+	if (bit == 0 && getBit(pos + 1) == 1)
+	{
+		this->arrayBits[3 - pos / 32] |= (~bit << (pos % 32));
+	}
+	else 
+		this->arrayBits[3 - pos / 32] |= (bit << (pos % 32));
+
 }
 
 int QInt::getBit(int pos)
 {
 	pos -= 1;
 	int tmp = this->arrayBits[3 - pos / 32] & (1 << pos % 32);
+	// bit thu pos = 1 => tmp != 0
 	return (tmp == 0) ? 0 : 1;
 }
 
@@ -229,7 +237,6 @@ QInt QInt::ror()
 {
 	QInt result;
 	// bit dau la bit cuoi cua bit cuoi ban dau
-	string tmp = this->toString(2);
 	result.setBit(128, this->getBit(1));
 	for (int i = 1; i + 1 <= 128; i++)
 	{

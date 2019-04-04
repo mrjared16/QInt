@@ -21,14 +21,14 @@ XuLyPhepTinh::XuLyPhepTinh(string input)
 		if (i >= 3)
 			break;
 	}
-
+	// Token cuoi la phan con lai
 	token[i++] = input.substr(start);
 	// Tien hanh xu ly thong tin luu vao cac bien
 	// Co 3 truong hop: 
 
 	// 3 token: 
-	// + base1 base2 operand: chuyen doi co so
 	// + base operator operand: toan tu mot ngoi: ~, ror, rol
+	// + base1 base2 operand: chuyen doi co so
 	if (i == 3)
 	{
 		base1 = stoi(token[0]);
@@ -82,11 +82,12 @@ string XuLyPhepTinh::result()
 	{
 		QInt tmp; 
 		// Tinh toan luu ket qua vao tmp 
+		
+		// Cac toan mot ngoi: rol, ror, ~
 		if (operator_str == "~" ||
 			operator_str == "rol" ||
 			operator_str == "ror") 
 		{
-			// Cac toan mot ngoi: rol, ror, ~
 			opr1.stringToQInt(operand1, base1);	// Chuyen sang QInt
 
 			// Tinh ket qua
@@ -95,14 +96,17 @@ string XuLyPhepTinh::result()
 			if (operator_str == "rol")
 				tmp = opr1.rol();
 			if (operator_str == "ror")
-				tmp = ~opr1.ror();
+				tmp = opr1.ror();
 		}
 		else
 		{
-			// Tao opr1, opr2
+			// Cac toan tu 2 ngoi con lai
+
+			// Tao opr1
 			opr1.stringToQInt(operand1, base1);
 			
-			// Truong hop >>, << doc operand 2 la int
+			// Truong hop >>, << 
+			// operand2 la int
 			if (operator_str == ">>") 
 			{
 				int k = stoi(operand2); 
@@ -115,12 +119,12 @@ string XuLyPhepTinh::result()
 			}
 			else
 			{
+				// Cac truong hop con lai operand2 la QInt
 				opr2.stringToQInt(operand2, base1);
 				char opt = operator_str[0]; 
 				// opt domain: +, -, *, /, &, |, ^, =
 
-				// Chon phep tinh va xu ly:
-				// lay ket qua chuyen sang string theo co so base1
+				// Chon phep tinh, tinh va luu vao tmp:
 				switch (opt)
 				{
 				case '+':
@@ -151,7 +155,7 @@ string XuLyPhepTinh::result()
 				}
 			}
 		}
-		// Sau do chuyen thanh chuoi luu vao result
+		// Sau do chuyen thanh chuoi luu vao result de return
 		result = tmp.toString(base1); // Chuyen sang co so cu
 	}
 
