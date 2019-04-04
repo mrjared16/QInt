@@ -3,9 +3,6 @@
 #include <math.h>
 #include <vector>
 
-#define NEGATIVE -1
-#define ZERO 0
-#define POSITIVE 1
 
 using namespace std;
 
@@ -32,6 +29,8 @@ public:
 	void stringToQInt(string n, int base);
 	string toString(int base);
 private:
+	int getSignBit();
+
 	int getBit(int pos);
 	void setBit(int pos, int bit);
 
@@ -44,9 +43,11 @@ private:
 	string toHex();
 
 	bool isZero();
+	bool isNegative();
+	bool isPositive();
+
 
 	unsigned int arrayBits[4];
-	int sign; // -1 is nagative, 1 is positive, 0 is zero
 };
 
 
