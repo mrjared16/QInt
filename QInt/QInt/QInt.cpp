@@ -73,7 +73,7 @@ QInt QInt::operator-(QInt n)
 	// a - b = a + (-b)
 	QInt n1;
 	// chuyen sang dang bu hai => chuyen sang QInt
-	n1.stringToQInt(twoComplement(n.toBin()), 2); // n1 = -n
+	n1.stringToQInt(BaseConverter::twoComplement(n.toBin()), 2); // n1 = -n
 	return (*this + n1);
 }
 
@@ -213,6 +213,7 @@ QInt QInt::operator^(QInt n)
 	return result;
 }
 
+
 QInt QInt::operator~()
 {
 	QInt result;
@@ -259,6 +260,7 @@ void QInt::operator=(QInt n)
 	}
 }
 
+
 // Dich trai kieu luan li
 // Su dung trong phep nhan, chia
 QInt QInt::shiftLeft(unsigned int k)
@@ -272,6 +274,7 @@ QInt QInt::shiftLeft(unsigned int k)
 
 	return result;
 }
+
 // Lay so doi cua -x cua x
 QInt QInt::changeSign()
 {
@@ -319,7 +322,7 @@ void QInt::decToQInt(string number)
 {
 	if (number == "0")
 		return;
-	string binary = DecToTwosComplementBinary(number);
+	string binary = BaseConverter::DecToTwosComplementBinary(number);
 	this->binToQInt(binary);
 }
 
@@ -344,9 +347,10 @@ void QInt::binToQInt(string binary)
 void QInt::hexToQInt(string hex) {
 	// Chuyen sang binary dang toi gian
 	// 0x01 => 0001 
-	string binary = HexToBinary(hex);
+	string binary = BaseConverter::HexToBinary(hex);
 	this->binToQInt(binary);
 }
+
 
 // Chuyen sang binary dang toi gian
 string QInt::toBin()
@@ -372,298 +376,12 @@ string QInt::toBin()
 string QInt::toDec()
 {
 	string binary = this->toBin();
-	string result = TwosComplementBinaryToDec(binary);
+	string result = BaseConverter::TwosComplementBinaryToDec(binary);
 	return result;
 }
 
 string QInt::toHex() {
 	string binary = this->toBin();
-	return BinaryToHex(binary);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-string Div2(string number)
-{
-	string result;
-	// Find prefix of number that is larger 
-	// than divisor. 
-	int temp = number[0] - '0';
-	int i = 1;
-	while (i <= number.size()) {
-		if (temp < 2) {
-			temp = temp * 10 + number[i] - '0';
-			i++;
-		}
-		else
-			break;
-	}
-	// Repeatedly divide divisor with temp. After  
-	// every division, update temp to include one  
-	// more digit. 
-	while (i <= number.size()) {
-		result += temp / 2 + '0';
-		temp = (temp % 2) * 10 + number[i] - '0';
-		i++;
-	}
-	// If divisor is greater than number 
-	if (result.size() == 0)
-		return "0";
+	string result = BaseConverter::BinaryToHex(binary);
 	return result;
 }
-
-string Sum(string str1, string str2)
-{
-	// Before proceeding further, make sure length 
-	// of str2 is larger. 
-	if (str1.length() > str2.length())
-		swap(str1, str2);
-	// Take an empty string for storing result 
-	string str = "";
-	// Calculate lenght of both string 
-	int n1 = str1.length(), n2 = str2.length();
-	// Reverse both of strings 
-	reverse(str1.begin(), str1.end());
-	reverse(str2.begin(), str2.end());
-	int carry = 0;
-	for (int i = 0; i < n1; i++)
-	{
-		// Do school mathematics, compute sum of 
-		// current digits and carry 
-		int sum = ((str1[i] - '0') + (str2[i] - '0') + carry);
-		str.push_back(sum % 10 + '0');
-		// Calculate carry for next step 
-		carry = sum / 10;
-	}
-
-	// Add remaining digits of larger number 
-	for (int i = n1; i < n2; i++)
-	{
-		int sum = ((str2[i] - '0') + carry);
-		str.push_back(sum % 10 + '0');
-		carry = sum / 10;
-	}
-	// Add remaining carry 
-	if (carry)
-		str.push_back(carry + '0');
-	// reverse resultant string 
-	reverse(str.begin(), str.end());
-	return str;
-}
-
-string Mult2(string number)
-{
-	return Sum(number, number);
-}
-
-
-string twoComplement(string binary)
-{
-	// index: tro den 1 bit cuoi cung
-	// Bu 2: 
-	// + ~ cac bit tu trai qua den (index - 1)
-	// + Giu nguyen cac bit tu index tro di
-
-	int len = binary.length();
-	bool flag = false;
-	string result;
-	for (int i = len - 1; i >= 0; i--)
-	{
-		int c = binary[i];
-		if (flag)
-		{
-			// Dao bit
-			c = (c == '0') ? '1' : '0';
-		}
-		else if (c == '1')
-		{
-			// Gap bit 1 dau tien, danh dau
-			flag = true;
-		}
-		// Them vao bit hien tai vao truoc
-		result = (char)c + result;
-	}
-	// Them bit 1 phia truoc cho du 128 bit
-	string addition_bits(128 - len, '1');
-	result = addition_bits + result;
-	return result;
-}
-
-
-string DecToBinary(string number)
-{
-	string result = "";
-	char bit;
-	while (number != "0")
-	{
-		// Lay chu so cuoi chia 2
-		bit = (number.back() - '0') % 2;
-		// Them vao truoc ket qua
-		result = (char)(bit + '0') + result;
-		// Chia 2 toi khi = 0
-		number = Div2(number);
-	}
-	return result;
-}
-
-string DecToTwosComplementBinary(string number)
-{
-	string result;
-	// Neu la so am
-	if (number[0] == '-')
-	{
-		// Loai bo dau, chuyen sang binary
-		// Lay bu 2 cua no
-		string pos_dec = number.substr(1);
-		string pos_bin = DecToBinary(pos_dec);
-		result = twoComplement(pos_bin);
-	}
-	else
-	{
-		result = DecToBinary(number);
-	}
-	return result;
-}
-
-string TwosComplementBinaryToDec(string binary)
-{
-	string result;
-
-	// So am khi bit thu 128 la 1
-	if (binary[0] == '1' && binary.length() == 128)
-	{
-		string pos_bin = twoComplement(binary);
-		string pos_dec = BinaryToDec(pos_bin);
-		result = '-' + pos_dec;
-		return result;
-	}
-	result = BinaryToDec(binary);
-	return result;
-}
-
-string BinaryToDec(string binary)
-{
-	string result = "0";
-	string tmp = "1"; // 2 ^ 0
-	int len = binary.length() - 1;
-	while (len >= 0)
-	{
-		// Cong tu trai qua phai
-		// + bit * (2^0) -> (2^(len - 1))
-		if (binary[len] == '1')
-		{
-			result = Sum(result, tmp);
-		}
-		tmp = Mult2(tmp);
-		len--;
-	}
-	return result;
-}
-
-
-string HexToBinary(string hex)
-{
-	string binary;
-	int len = hex.length();
-	for (int i = len - 1; i >= 0; i--) {
-		binary = codeBinaryOfHex(hex[i]) + binary;
-	}
-	return binary;
-}
-
-string BinaryToHex(string binary)
-{
-	string result, get_4_lastbits;
-	string tmp = binary;
-	while (tmp != "")
-	{
-		int len = tmp.length();
-		// Lay tung chuoi 4 bit cuoi
-
-		// Neu du 4 bit
-		if (len >= 4)
-		{
-			get_4_lastbits = tmp.substr(len - 4);	// Lay 4 bit cuoi
-			tmp = tmp.substr(0, len - 4);			// Cat di 4 ki tu cuoi
-		}
-		// Neu khong du 4 bit
-		else
-		{
-			// Them 0 vao truoc chuoi tmp cho du 4 bit
-			string addition_zero(4 - len, '0');
-			get_4_lastbits = addition_zero + tmp;
-			tmp = "";
-		}
-		result = codeHexOfBinary(get_4_lastbits) + result;		// Them vao truoc result
-	}
-	return result;
-}
-
-
-string codeBinaryOfHex(char hex)
-{
-	switch (hex)
-	{
-	default: return "0000";
-	case '1': return "0001";
-	case '2': return "0010";
-	case '3': return "0011";
-	case '4': return "0100";
-	case '5': return "0101";
-	case '6': return "0110";
-	case '7': return "0111";
-	case '8': return "1000";
-	case '9': return "1001";
-	case 'A': return "1010";
-	case 'B': return "1011";
-	case 'C': return "1100";
-	case 'D': return "1101";
-	case 'E': return "1110";
-	case 'F': return "1111";
-	}
-}
-
-string codeHexOfBinary(string binary)
-{
-	if (binary == "0001") return "1";
-	else if (binary == "0010") return "2";
-	else if (binary == "0011") return "3";
-	else if (binary == "0100") return "4";
-	else if (binary == "0101") return "5";
-	else if (binary == "0110") return "6";
-	else if (binary == "0111") return "7";
-	else if (binary == "1000") return "8";
-	else if (binary == "1001") return "9";
-	else if (binary == "1010") return "A";
-	else if (binary == "1011") return "B";
-	else if (binary == "1100") return "C";
-	else if (binary == "1101") return "D";
-	else if (binary == "1110") return "E";
-	else if (binary == "1111") return "F";
-	else return "0";
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
