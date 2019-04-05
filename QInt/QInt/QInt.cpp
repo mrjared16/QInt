@@ -545,7 +545,7 @@ string TwosComplementBinaryToDec(string binary)
 	if (binary[0] == '1' && binary.length() == 128)
 	{
 		string pos_bin = twoComplement(binary);
-		string pos_dec = BinaryToDec(binary);
+		string pos_dec = BinaryToDec(pos_bin);
 		result = '-' + pos_dec;
 		return result;
 	}
