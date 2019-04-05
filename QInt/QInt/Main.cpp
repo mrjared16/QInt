@@ -1,6 +1,5 @@
 #include "XuLyInOut.h"
 
-
 int main(int argv, char **arg)
 {
 	int input_index = 1;
