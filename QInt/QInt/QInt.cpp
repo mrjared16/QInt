@@ -398,27 +398,25 @@ string QInt::toHex() {
 string Div2(string number)
 {
 	string result;
-	// Find prefix of number that is larger 
-	// than divisor. 
-	int temp = number[0] - '0';
 	int i = 1;
+	bool flag = false; //kiem tra xem temp co lon hon 2 hay chua?
+	int temp = number[0] - '0'; //Lay chu so dau tien tinh tu ben trai qua cua so chia
 	while (i <= number.size()) {
-		if (temp < 2) {
+		//Neu temp chua lon hon 2 thi tiep tuc lay chu so tiep theo cho den khi nao lon hon 2 
+		if (temp < 2 && flag == false) {
 			temp = temp * 10 + number[i] - '0';
 			i++;
+			continue;
 		}
-		else
-			break;
-	}
-	// Repeatedly divide divisor with temp. After  
-	// every division, update temp to include one  
-	// more digit. 
-	while (i <= number.size()) {
-		result += temp / 2 + '0';
-		temp = (temp % 2) * 10 + number[i] - '0';
+		else {
+			//Neu flag = true tuc la temp dang lon hon 2
+			flag = true;
+		}
+		result += temp / 2 + '0'; //Lay temp chia 2 de luu lai ket qua
+		temp = (temp % 2) * 10 + number[i] - '0'; //Cap nhat lai temp bang cach lay so du va ha xuong chu so ke tiep
 		i++;
 	}
-	// If divisor is greater than number 
+	//Neu so bi chia lon hon so chia thi ra thuong = 0
 	if (result.size() == 0)
 		return "0";
 	return result;
@@ -426,41 +424,31 @@ string Div2(string number)
 
 string Sum(string str1, string str2)
 {
-	// Before proceeding further, make sure length 
-	// of str2 is larger. 
-	if (str1.length() > str2.length())
-		swap(str1, str2);
-	// Take an empty string for storing result 
-	string str = "";
-	// Calculate lenght of both string 
-	int n1 = str1.length(), n2 = str2.length();
-	// Reverse both of strings 
-	reverse(str1.begin(), str1.end());
-	reverse(str2.begin(), str2.end());
+	//Them chu so 0 vao dau chuoi nao ngan hon de do dai hai chuoi bang nhau
+	if (str1.length() > str2.length()) {
+		string addition_0_digit(str1.length() - str2.length(), '0');
+		str2 = addition_0_digit + str2;
+	}
+	else if (str2.length() > str1.length()) {
+		string addition_0_digit(str2.length() - str1.length(), '0');
+		str1 = addition_0_digit + str1;
+	}
+	string result = "";
 	int carry = 0;
-	for (int i = 0; i < n1; i++)
-	{
-		// Do school mathematics, compute sum of 
-		// current digits and carry 
-		int sum = ((str1[i] - '0') + (str2[i] - '0') + carry);
-		str.push_back(sum % 10 + '0');
-		// Calculate carry for next step 
-		carry = sum / 10;
+	//Thuc hien nhu phep cong binh thuong, lay chu so cuoi cua chuoi 1 va chuoi 2 truoc roi cong lai voi nhau
+	//va tiep tuc lay chu so ke cuoi cua chuoi 1 va chuoi 2 cong lai voi nhau. Cu nhu the cho den khi
+	//vi tri xet vuot qua dau chuoi thi dung lai.
+	for (int i = str1.length() - 1; i >= 0; i--) {
+		int sum = (str1[i] - '0') + (str2[i] - '0') + carry;
+		result = to_string(sum % 10) + result; //Sau khi cong hai chu so lai thi chi lay hang don vi
+		carry = sum / 10; //sau moi lan cong hai chu so se cap nhat lai so nho
 	}
-
-	// Add remaining digits of larger number 
-	for (int i = n1; i < n2; i++)
-	{
-		int sum = ((str2[i] - '0') + carry);
-		str.push_back(sum % 10 + '0');
-		carry = sum / 10;
+	//Sau khi cong xong ta them so nho vao dau chuoi
+	if (carry) {
+		result = to_string(carry) + result;
 	}
-	// Add remaining carry 
-	if (carry)
-		str.push_back(carry + '0');
-	// reverse resultant string 
-	reverse(str.begin(), str.end());
-	return str;
+	return result;
+	
 }
 
 string Mult2(string number)
