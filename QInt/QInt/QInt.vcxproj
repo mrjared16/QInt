@@ -23,7 +23,7 @@
     <ProjectGuid>{AE2C1ABE-5D61-470E-9771-686CDFA1295D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>QInt</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -143,12 +143,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BaseConverter.cpp" />
+    <ClCompile Include="BigIntCalculator.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="QInt.cpp" />
     <ClCompile Include="XuLyInOut.cpp" />
     <ClCompile Include="XuLyPhepTinh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseConverter.h" />
+    <ClInclude Include="BigIntCalculator.h" />
     <ClInclude Include="QInt.h" />
     <ClInclude Include="XuLyInOut.h" />
     <ClInclude Include="XuLyPhepTinh.h" />
