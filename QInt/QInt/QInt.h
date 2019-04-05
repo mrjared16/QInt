@@ -55,16 +55,19 @@ private:
 //=========================================
 // Ham tham khao tren mang
 string Div2(string number);
+string Mult2(string number);
 string Sum(string str1, string str2);
-string multiply(string num1, string num2);
+//string multiply(string num1, string num2);
 //=========================================
 
-string twoHat(int num); //Find 2^(num) = ?
-string standardizedBinary(string binary); //
+//string twoHat(int num); //Find 2^(num) = ?
+//string standardizedBinary(string binary); //
 string twoComplement(string binary);
 string codeBinaryOfHex(char hex);
 string codeHexOfBinary(string binary);
 string DecToBinary(string number);
+string DecToTwosComplementBinary(string number);
+string TwosComplementBinaryToDec(string binary); // if twoCompl = true, convert two complement format
 string BinaryToDec(string binary); // if twoCompl = true, convert two complement format
 string BinaryToHex(string binary);
 string HexToBinary(string hex);

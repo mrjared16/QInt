@@ -64,7 +64,7 @@ QInt QInt::operator+(QInt n)
 		// Tinh carry  
 		carry = sum / 2;
 	}
-	
+
 	return result;
 }
 
@@ -110,7 +110,7 @@ QInt QInt::operator/(QInt n)
 		bit = Q.getSignBit();	//Luu lai bit most left cua Q truoc khi dich trai
 
 		//Dich trai [A,Q]
-		A = A.shiftLeft(1); 
+		A = A.shiftLeft(1);
 		Q = Q.shiftLeft(1);
 
 		A.setBit(1, bit);		//Cai dat bit cho bit 1 cua A = most left cua Q
@@ -154,7 +154,7 @@ QInt QInt::operator>>(unsigned int k)
 	{
 		result.setBit(i - k, this->getBit(i));
 	}
-	
+
 	return result;
 }
 
@@ -165,11 +165,11 @@ QInt QInt::operator<<(unsigned int k)
 	result.setBit(128, this->getSignBit());
 	// Dich cac bit con lai
 	// Bat dau tu 127, bo qua bit dau
-	for (int i = 127; i - k >= 1; i--)	
+	for (int i = 127; i - k >= 1; i--)
 	{
 		result.setBit(i, this->getBit(i - k));
 	}
-	
+
 	return result;
 }
 
@@ -183,7 +183,7 @@ QInt QInt::operator&(QInt n)
 		tmp = this->getBit(i) & n.getBit(i);
 		result.setBit(i, tmp);
 	}
-	
+
 	return result;
 }
 
@@ -196,7 +196,7 @@ QInt QInt::operator|(QInt n)
 		tmp = this->getBit(i) | n.getBit(i);
 		result.setBit(i, tmp);
 	}
-	
+
 	return result;
 }
 
@@ -209,7 +209,7 @@ QInt QInt::operator^(QInt n)
 		tmp = this->getBit(i) ^ n.getBit(i);
 		result.setBit(i, tmp);
 	}
-	
+
 	return result;
 }
 
@@ -220,7 +220,7 @@ QInt QInt::operator~()
 	{
 		result.setBit(i, (this->getBit(i) == 0) ? 1 : 0);
 	}
-	
+
 	return result;
 }
 // Xoay trai 1 bit
@@ -233,7 +233,7 @@ QInt QInt::rol()
 	{
 		result.setBit(i, this->getBit(i - 1));	// i: (128) -> (2)
 	}
-	
+
 	return result;
 }
 // Xoay phai 1 bit
@@ -247,7 +247,7 @@ QInt QInt::ror()
 	{
 		result.setBit(i - 1, this->getBit(i)); // i: (128) -> (2)
 	}
-	
+
 	return result;
 }
 
@@ -343,12 +343,13 @@ void QInt::decToQInt(string number)
 	}*/
 	if (number == "0")
 		return;
-	string binary = DecToBinary(number);
+	string binary = DecToTwosComplementBinary(number);
 	this->binToQInt(binary);
 }
 
 // Doc chuoi binary vao QInt
 // binary: Khong can chuan hoa du 128 ki tu
+// Cac bit 0 dau con lai duoc tao boi constructor
 void QInt::binToQInt(string binary)
 {
 	int i = 1;
@@ -365,12 +366,13 @@ void QInt::binToQInt(string binary)
 
 // Doc chuoi hex vao QInt
 void QInt::hexToQInt(string hex) {
-	// Chuyen sang binary 
+	// Chuyen sang binary dang toi gian
+	// 0x01 => 0001 
 	string binary = HexToBinary(hex);
 	this->binToQInt(binary);
 }
 
-
+// Chuyen sang binary dang toi gian
 string QInt::toBin()
 {
 	string binary = "";
@@ -383,9 +385,24 @@ string QInt::toBin()
 	//		binary.replace(i * 32, 32, temp);
 	//	}
 	//}
+	bool flag = false;
 	for (int i = 128; i >= 1; i--)
 	{
-		binary += (this->getBit(i) + '0');
+		if (flag)
+		{
+			// Da qua 1 bit dau tien
+			// Them bit hien tai vao cuoi
+			binary += (this->getBit(i) + '0');
+		}
+		else
+		{
+			// Gap bit 1 dau tien
+			if (this->getBit(i) == 1)
+			{
+				flag = true;
+			}
+			// Nguoc lai bo qua, ko them vao chuoi
+		}
 	}
 	return binary;
 }
@@ -401,7 +418,7 @@ string QInt::toDec()
 		Decimal.insert(0, "-");
 	}*/
 	string binary = this->toBin();
-	return BinaryToDec(binary);
+	return TwosComplementBinaryToDec(binary);
 }
 
 string QInt::toHex() {
@@ -450,6 +467,11 @@ string Div2(string number)
 	if (result.size() == 0)
 		return "0";
 	return result;
+}
+
+string Mult2(string number)
+{
+	return number + number;
 }
 
 string Sum(string str1, string str2)
@@ -558,42 +580,69 @@ string twoHat(int num)
 	return result;
 }
 
-string standardizedBinary(string binary)
-{
-	string temp = binary;
-	while (temp.size() < 128) {
-		temp.insert(0, "0");
-	}
-	return temp;
-}
+//string standardizedBinary(string binary)
+//{
+//	string temp = binary;
+//	while (temp.size() < 128) {
+//		temp.insert(0, "0");
+//	}
+//	return temp;
+//}
 
 string twoComplement(string binary)
 {
-	binary = standardizedBinary(binary);
-	for (int i = 0; i < 128; i++) {
-		if (binary.at(i) == '1') {
-			binary.at(i) = '0';
+	//binary = standardizedBinary(binary);
+	//for (int i = 0; i < 128; i++) {
+	//	if (binary.at(i) == '1') {
+	//		binary.at(i) = '0';
+	//	}
+	//	else if (binary.at(i) == '0') {
+	//		binary.at(i) = '1';
+	//	}
+	//}
+	//for (int i = 127; i >= 0; i--) {
+	//	if (binary.at(i) == '1')
+	//		binary.at(i) = '0';
+	//	else if (binary.at(i) == '0') {
+	//		binary.at(i) = '1';
+	//		break;
+	//	}
+	//}
+	// index: tro den 1 bit cuoi cung
+	// Bu 2: 
+	// + ~ cac bit tu trai qua den (index - 1)
+	// + Giu nguyen cac bit tu index tro di
+
+	int len = binary.length();
+	bool flag = false;
+	string result;
+	for (int i = len - 1; i >= 0; i++)
+	{
+		int c = binary[i];
+		if (flag)
+		{
+			// Dao bit
+			c = (c == 0) ? 1 : 0;
 		}
-		else if (binary.at(i) == '0') {
-			binary.at(i) = '1';
+		else if (c == 1)
+		{
+			// Gap bit 1 dau tien, danh dau
+			flag = true;
 		}
+		// Them vao bit hien tai vao truoc
+		result = (char)c + result;
 	}
-	for (int i = 127; i >= 0; i--) {
-		if (binary.at(i) == '1')
-			binary.at(i) = '0';
-		else if (binary.at(i) == '0') {
-			binary.at(i) = '1';
-			break;
-		}
-	}
-	return binary;
+	// Them bit 1 phia truoc cho du 128 bit
+	string addidtion_bits(128 - len, '1');
+	result += addidtion_bits;
+	return result;
 }
 
 
 string DecToBinary(string number)
 {
-	string binary = "";
-	binary = standardizedBinary(binary);
+	string result = "";
+	/*binary = standardizedBinary(binary);
 	int i = 127;
 	int bit;
 	int len = number.size() - 1;
@@ -605,23 +654,79 @@ string DecToBinary(string number)
 		number = Div2(number);
 		len = number.size() - 1;
 		i--;
+	}*/
+	char bit;
+	while (number != "0")
+	{
+		// Lay chu so cuoi chia 2
+		bit = (number.back() - '0') % 2;
+		// Them vao truoc ket qua
+		result = (char)bit + result;
+		// Chia 2 toi khi = 0
+		number = Div2(number);
 	}
-	return binary;
+	return result;
+}
+
+string DecToTwosComplementBinary(string number)
+{
+	string result;
+	// Neu la so am
+	if (number[0] == '-')
+	{
+		// Loai bo dau, chuyen sang binary
+		// Lay bu 2 cua no
+		result = twoComplement(DecToBinary(number.substr(1)));
+	}
+	else
+	{
+		result = DecToBinary(number);
+	}
+	return result;
+}
+
+string TwosComplementBinaryToDec(string binary)
+{
+	string result;
+
+	// So am khi bit thu 128 la 1
+	if (binary[0] == '1' && binary.length() == 128)
+	{
+		binary = twoComplement(binary);
+		result = '-' + BinaryToDec(binary);
+		return result;
+	}
+	result = BinaryToDec(binary);
+	return result;
 }
 
 string BinaryToDec(string binary)
 {
-	binary = standardizedBinary(binary);
-	string Decimal = "0";
-	for (int i = 127; i >= 0; i--) {
-		if (binary.at(i) == '1') {
-			Decimal = Sum(Decimal, twoHat(127 - i));
+	//binary = standardizedBinary(binary);
+	//string Decimal = "0";
+	//for (int i = 127; i >= 0; i--) {
+	//	if (binary.at(i) == '1') {
+	//		Decimal = Sum(Decimal, twoHat(127 - i));
+	//	}
+	//}
+	//while (Decimal.at(0) == '0' && Decimal.compare("0") != 0) {
+	//	Decimal.replace(0, 1, "");
+	//}
+	string result = "0";
+	string tmp = "1"; // 2 ^ 0
+	int len = binary.length() - 1;
+	while (len >= 0)
+	{
+		// Cong tu trai qua phai
+		// + bit * (2^0) -> (2^(len - 1))
+		if (binary[len] == '1')
+		{
+			result = Sum(result, tmp);
 		}
+		tmp = Mult2(tmp);
+		len--;
 	}
-	while (Decimal.at(0) == '0' && Decimal.compare("0") != 0) {
-		Decimal.replace(0, 1, "");
-	}
-	return Decimal;
+	return result;
 }
 
 
