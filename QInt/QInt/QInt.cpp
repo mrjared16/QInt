@@ -80,7 +80,7 @@ QInt QInt::operator-(QInt n)
 	// a - b = a + (-b)
 	QInt n1;
 	// chuyen sang dang bu hai => chuyen sang QInt
-	n1.stringToQInt(BaseConverter::twoComplement(n.toBin()), 2); // n1 = -n
+	n1.stringToQInt(BaseConverter::getTwosComplement(n.toBin()), 2); // n1 = -n
 	return (*this + n1);
 }
 
@@ -340,7 +340,7 @@ void QInt::decToQInt(string dec)
 {
 	if (dec == "0")
 		return;
-	string binary = BaseConverter::DecToTwosComplementBinary(dec);
+	string binary = BaseConverter::getTwosComplementBinOfDec(dec);
 	this->binToQInt(binary);
 }
 
@@ -365,7 +365,7 @@ void QInt::binToQInt(string binary)
 void QInt::hexToQInt(string hex) {
 	// Chuyen sang binary dang toi gian
 	// 0x01 => 0001 
-	string binary = BaseConverter::HexToBinary(hex);
+	string binary = BaseConverter::getBinOfHex(hex);
 	this->binToQInt(binary);
 }
 
@@ -395,13 +395,13 @@ string QInt::toBin()
 string QInt::toDec()
 {
 	string binary = this->toBin();
-	string result = BaseConverter::TwosComplementBinaryToDec(binary);
+	string result = BaseConverter::getDecOfTwosComplementBin(binary);
 	return result;
 }
 
 // Chuyen QInt sang dang thap luc
 string QInt::toHex() {
 	string binary = this->toBin();
-	string result = BaseConverter::BinaryToHex(binary);
+	string result = BaseConverter::getHexOfBin(binary);
 	return result;
 }
