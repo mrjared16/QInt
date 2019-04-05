@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 
+// Doc file input, truyen phep toan vao XuLyPhepTinh, tinh toan va ghi vao file output
 void XuLyInOut::run(string input_name, string output_name)
 {
 	string buffer;

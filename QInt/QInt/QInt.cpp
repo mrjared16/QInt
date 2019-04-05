@@ -1,5 +1,6 @@
 #include "QInt.h"
 
+// Constructor mac dinh: 128 bit 0
 QInt::QInt()
 {
 	for (int i = 0; i < 4; i++) {
@@ -10,6 +11,7 @@ QInt::QInt()
 // pos: 1 - 128
 // bit: 0 / 1
 
+// Chuyen bit vi tri 'pos' thanh gia tri 'bit'
 void QInt::setBit(int pos, int bit)
 {
 	pos -= 1;
@@ -23,6 +25,7 @@ void QInt::setBit(int pos, int bit)
 
 }
 
+// Lay gia tri bit vi tri 'pos'
 int QInt::getBit(int pos)
 {
 	pos -= 1;
@@ -31,23 +34,26 @@ int QInt::getBit(int pos)
 	return (tmp == 0) ? 0 : 1;
 }
 
-
+// Lay bit dau cua QInt
 int QInt::getSignBit()
 {
 	return this->getBit(128);
 }
 
+// Kiem tra QInt co am khong
 bool QInt::isNegative()
 {
 	return (this->getSignBit() == 1);
 }
 
+// Kiem tra QInt co duong khong
 bool QInt::isPositive()
 {
 	return (this->getSignBit() == 0);
 }
 
 
+// Cong 2 QInt
 QInt QInt::operator+(QInt n)
 {
 	QInt result;
@@ -68,6 +74,7 @@ QInt QInt::operator+(QInt n)
 	return result;
 }
 
+// Tru 2 QInt
 QInt QInt::operator-(QInt n)
 {
 	// a - b = a + (-b)
@@ -77,6 +84,7 @@ QInt QInt::operator-(QInt n)
 	return (*this + n1);
 }
 
+// Nhan 2 QInt
 QInt QInt::operator*(QInt n)
 {
 	QInt A;
@@ -92,6 +100,7 @@ QInt QInt::operator*(QInt n)
 	return A;
 }
 
+// Chia 2 QInt
 QInt QInt::operator/(QInt n)
 {
 	QInt A;
@@ -132,7 +141,7 @@ QInt QInt::operator/(QInt n)
 	return Q;
 }
 
-
+// Dich QInt sang phai k bit
 QInt QInt::operator>>(unsigned int k)
 {
 	QInt result;
@@ -158,6 +167,7 @@ QInt QInt::operator>>(unsigned int k)
 	return result;
 }
 
+// Dich QInt sang trai k bit
 QInt QInt::operator<<(unsigned int k)
 {
 	QInt result;
@@ -173,7 +183,7 @@ QInt QInt::operator<<(unsigned int k)
 	return result;
 }
 
-
+// and 2 QInt
 QInt QInt::operator&(QInt n)
 {
 	QInt result;
@@ -187,6 +197,7 @@ QInt QInt::operator&(QInt n)
 	return result;
 }
 
+// or 2 QInt
 QInt QInt::operator|(QInt n)
 {
 	QInt result;
@@ -200,6 +211,7 @@ QInt QInt::operator|(QInt n)
 	return result;
 }
 
+// xor 2 QInt
 QInt QInt::operator^(QInt n)
 {
 	QInt result;
@@ -213,7 +225,7 @@ QInt QInt::operator^(QInt n)
 	return result;
 }
 
-
+// Lay gia tri not QInt
 QInt QInt::operator~()
 {
 	QInt result;
@@ -224,6 +236,7 @@ QInt QInt::operator~()
 
 	return result;
 }
+
 // Xoay trai 1 bit
 QInt QInt::rol()
 {
@@ -237,6 +250,7 @@ QInt QInt::rol()
 
 	return result;
 }
+
 // Xoay phai 1 bit
 QInt QInt::ror()
 {
@@ -253,6 +267,7 @@ QInt QInt::ror()
 }
 
 
+// Gan 2 QInt
 void QInt::operator=(QInt n)
 {
 	for (int i = 0; i < 4; i++) {
@@ -283,22 +298,24 @@ QInt QInt::changeSign()
 }
 
 
-void QInt::stringToQInt(string n, int base)
+// Chuyen tu chuoi 'str' co so 'base' vao QInt
+void QInt::stringToQInt(string str, int base)
 {
 	switch (base)
 	{
 	case 2:
-		binToQInt(n);
+		binToQInt(str);
 		break;
 	case 10:
-		decToQInt(n);
+		decToQInt(str);
 		break;
 	case 16:
-		hexToQInt(n);
+		hexToQInt(str);
 		break;
 	}
 }
 
+// chuyen QInt sang chuoi co so 'base'
 string QInt::toString(int base)
 {
 	string result = "";
@@ -318,11 +335,12 @@ string QInt::toString(int base)
 }
 
 
-void QInt::decToQInt(string number)
+// Chuyen chuoi 'number' co so 10 vao QInt
+void QInt::decToQInt(string dec)
 {
-	if (number == "0")
+	if (dec == "0")
 		return;
-	string binary = BaseConverter::DecToTwosComplementBinary(number);
+	string binary = BaseConverter::DecToTwosComplementBinary(dec);
 	this->binToQInt(binary);
 }
 
@@ -352,7 +370,7 @@ void QInt::hexToQInt(string hex) {
 }
 
 
-// Chuyen sang binary dang toi gian
+// Chuyen QInt sang binary dang toi gian
 string QInt::toBin()
 {
 	string binary = "";
@@ -373,6 +391,7 @@ string QInt::toBin()
 	return binary;
 }
 
+// Chuyen QInt sang dang thap phan co dau
 string QInt::toDec()
 {
 	string binary = this->toBin();
@@ -380,6 +399,7 @@ string QInt::toDec()
 	return result;
 }
 
+// Chuyen QInt sang dang thap luc
 string QInt::toHex() {
 	string binary = this->toBin();
 	string result = BaseConverter::BinaryToHex(binary);

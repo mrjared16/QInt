@@ -1,6 +1,7 @@
 #include "XuLyPhepTinh.h"
 #include "QInt.h"
 
+// Constructor: Doc chuoi chi thi 'input' vao cac bien operator, operand, base, ...
 XuLyPhepTinh::XuLyPhepTinh(string input)
 {
 	string delimiter = " "; // phep toan, toan hang cach nhau boi " "
@@ -67,6 +68,7 @@ XuLyPhepTinh::XuLyPhepTinh(string input)
 
 }
 
+// Tu operand, operator, base doc dc tinh toan roi tra ve ket qua chi thi
 string XuLyPhepTinh::result()
 {
 	QInt opr1, opr2;

@@ -1,6 +1,6 @@
 #include "BigIntCalculator.h"
 
-
+// Tra ve tong hai chuoi so thap phan 'str1', 'str2'
 string BigIntCalculator::Sum(string str1, string str2)
 {
 	//Them chu so 0 vao dau chuoi nao ngan hon de do dai hai chuoi bang nhau
@@ -34,13 +34,13 @@ string BigIntCalculator::Sum(string str1, string str2)
 
 }
 
-
+// Tra ve tich chuoi thap phan ('number' * 2)
 string BigIntCalculator::Mult2(string number)
 {
 	return Sum(number, number);
 }
 
-
+// Tra ve thuong phep chia lay phan nguyen chuoi thap phan ('number' / 2)
 string BigIntCalculator::Div2(string number)
 {
 	string result;

@@ -4,18 +4,18 @@
 class BaseConverter
 {
 public:
-	static string DecToTwosComplementBinary(string number);
-	static string TwosComplementBinaryToDec(string binary);
+	static string getTwosComplementBinOfDec(string decimal);
+	static string getDecOfTwosComplementBin(string binary);
 
-	static string HexToBinary(string hex);
-	static string BinaryToHex(string binary);
+	static string getBinOfHex(string hex);
+	static string getHexOfBin(string binary);
 
-	 static string twoComplement(string binary);
+	 static string getTwosComplement(string binary);
 private:
-	 static string codeBinaryOfHex(char hex);
-	 static string codeHexOfBinary(string binary);
+	 static string codeBinOfHex(char hex);
+	 static string codeHexOfBin(string binary);
 	 	
-	 static string DecToBinary(string number);
-	 static string BinaryToDec(string binary);
+	 static string getBinOfDec(string decimal);
+	 static string getDecOfBin(string binary);
 };	 
 

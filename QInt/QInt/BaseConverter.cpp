@@ -1,8 +1,8 @@
 #include "BaseConverter.h"
 
 
-
-string BaseConverter::twoComplement(string binary)
+// Lay gia tri bu hai cua chuoi nhi phan 'binary'
+string BaseConverter::getTwosComplement(string binary)
 {
 	// index: tro den 1 bit cuoi cung
 	// Bu 2: 
@@ -34,24 +34,25 @@ string BaseConverter::twoComplement(string binary)
 	return result;
 }
 
-
-string BaseConverter::DecToBinary(string number)
+// Lay chuoi binary cua chuoi thap phan 'decimal' 
+string BaseConverter::getBinOfDec(string decimal)
 {
 	string result = "";
 	char bit;
-	while (number != "0")
+	while (decimal != "0")
 	{
 		// Lay chu so cuoi chia 2
-		bit = (number.back() - '0') % 2;
+		bit = (decimal.back() - '0') % 2;
 		// Them vao truoc ket qua
 		result = (char)(bit + '0') + result;
 		// Chia 2 toi khi = 0
-		number = BigIntCalculator::Div2(number);
+		decimal = BigIntCalculator::Div2(decimal);
 	}
 	return result;
 }
 
-string BaseConverter::BinaryToDec(string binary)
+// Lay chuoi thap phan cua chuoi nhi phan 'binary' 
+string BaseConverter::getDecOfBin(string binary)
 {
 	string result = "0";
 	string tmp = "1"; // 2 ^ 0
@@ -70,54 +71,57 @@ string BaseConverter::BinaryToDec(string binary)
 	return result;
 }
 
-
-string BaseConverter::DecToTwosComplementBinary(string number)
+// Lay chuoi nhi phan dang bu hai tu chuoi thap phan 'decimal'
+string BaseConverter::getTwosComplementBinOfDec(string decimal)
 {
 	string result;
 	// Neu la so am
-	if (number[0] == '-')
+	if (decimal[0] == '-')
 	{
 		// Loai bo dau, chuyen sang binary
 		// Lay bu 2 cua no
-		string pos_dec = number.substr(1);
-		string pos_bin = DecToBinary(pos_dec);
-		result = twoComplement(pos_bin);
+		string pos_dec = decimal.substr(1);
+		string pos_bin = getBinOfDec(pos_dec);
+		result = getTwosComplement(pos_bin);
 	}
 	else
 	{
-		result = DecToBinary(number);
+		result = getBinOfDec(decimal);
 	}
 	return result;
 }
 
-string BaseConverter::TwosComplementBinaryToDec(string binary)
+// Lay chuoi thap phan cua chuoi nhi phan duoi dang bu hai 'binary'
+string BaseConverter::getDecOfTwosComplementBin(string binary)
 {
 	string result;
 
 	// So am khi bit thu 128 la 1
 	if (binary[0] == '1' && binary.length() == 128)
 	{
-		string pos_bin = twoComplement(binary);
-		string pos_dec = BinaryToDec(pos_bin);
+		string pos_bin = getTwosComplement(binary);
+		string pos_dec = getDecOfBin(pos_bin);
 		result = '-' + pos_dec;
 		return result;
 	}
-	result = BinaryToDec(binary);
+	result = getDecOfBin(binary);
 	return result;
 }
 
 
-string BaseConverter::HexToBinary(string hex)
+// Lay chuoi nhi phan cua chuoi he thap luc 'hex' 
+string BaseConverter::getBinOfHex(string hex)
 {
 	string binary;
 	int len = hex.length();
 	for (int i = len - 1; i >= 0; i--) {
-		binary = codeBinaryOfHex(hex[i]) + binary;
+		binary = codeBinOfHex(hex[i]) + binary;
 	}
 	return binary;
 }
 
-string BaseConverter::BinaryToHex(string binary)
+// Lay chuoi he thap luc cua chuoi nhi phan 'binary' 
+string BaseConverter::getHexOfBin(string binary)
 {
 	string result, get_4_lastbits;
 	string tmp = binary;
@@ -140,13 +144,13 @@ string BaseConverter::BinaryToHex(string binary)
 			get_4_lastbits = addition_zero + tmp;
 			tmp = "";
 		}
-		result = codeHexOfBinary(get_4_lastbits) + result;		// Them vao truoc result
+		result = codeHexOfBin(get_4_lastbits) + result;		// Them vao truoc result
 	}
 	return result;
 }
 
-
-string BaseConverter::codeBinaryOfHex(char hex)
+// Lay dang nhi phan 4 bit cua he thap luc phan
+string BaseConverter::codeBinOfHex(char hex)
 {
 	switch (hex)
 	{
@@ -169,7 +173,8 @@ string BaseConverter::codeBinaryOfHex(char hex)
 	}
 }
 
-string BaseConverter::codeHexOfBinary(string binary)
+// Lay ki tu Hex tu chuoi nhi phan 4 bit
+string BaseConverter::codeHexOfBin(string binary)
 {
 	if (binary == "0001") return "1";
 	else if (binary == "0010") return "2";
